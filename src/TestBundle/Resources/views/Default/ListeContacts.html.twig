@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des contacts</title>
+    <script src="http://code.jquery.com/jquery-latest.min.js"
+            type="text/javascript"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+<body style="background-color: #313131; color: #dadada;">
+<h1 style="text-align: center;">Liste des contacts</h1>
+<table align="center" valign="middle" style="width: 50%;">
+    <thead>
+    <tr>
+        <th>Nom</th>
+        <th>Email</th>
+    </tr>
+    </thead>
+    <tbody>
+{% for item in contacts %}
+    <tr>
+        <td>{{ item.getNom }}</td>
+        <td>{{ item.getEmail }}</td>
+        <td><button class="btn btn-sm btn-success" data-toggle="modal"
+                    data-target="{{ "#modal#{item.getId}" }}">Afficher</button>
+        </td>
+        <td><button class="btn btn-sm btn-warning" data-toggle="modal"
+                    data-target="{{ "#modalEdit#{item.getId}" }}">Editer</button>
+        </td>
+        <td><form action="{{ path('delete_contact') }}" method="post">
+                <input type="hidden" name="idContact" value="{{ item.getId() }}">
+                <input type="submit" class="btn btn-sm btn-danger" value="Supprimer" />
+            </form></td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+<br>
+<div style="text-align: center;">
+    <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#modalCreerContact"> Créer Contact </button>
+    <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#modalAddContact"> Ajouter Contact au Carnet</button>
+</div>
+<!-- Modal Création Contact -->
+<div class="modal fade" id="modalCreerContact" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" style="color: #313131;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    Créer un contact
+                </h4>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+
+                <form action="{{ path('creer_contact') }}" method="post">
+                    <div class="form-group">
+                        <label for="modalName">Nom</label>
+                        <input type="text" class="form-control"
+                               id="modalName" placeholder="Nom" name="modalName"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalEmail">Email</label>
+                        <input type="email" class="form-control"
+                               id="modalEmail" placeholder="Email" name="modalEmail"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalAdresse">Adresse</label>
+                        <input type="text" class="form-control"
+                               id="modalAdresse" placeholder="Adresse" name="modalAdresse"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalSite">Site</label>
+                        <input type="text" class="form-control"
+                               id="modalSite" placeholder="Site" name="modalSite"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalPhone">Phone</label>
+                        <input type="text" class="form-control"
+                               id="modalPhone" placeholder="Phone" name="modalPhone"/>
+                    </div>
+
+                    <button type="submit" class="btn btn-default">Ajouter</button>
+                </form>
+
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Ajout au Carnet -->
+<div class="modal fade" id="modalAddContact" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" style="color: #313131;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel2">
+                    Ajouter un contact au Carnet
+                </h4>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+
+                <form action="{{ path('ajouter_carnet') }}" method="post">
+                    <div class="form-group">
+                        <label for="modalAddContact">Choisissez le contact: </label>
+                        <select name="modalAddContact" size="1">
+                            {% for item in listeContacts %}
+                                <option value="{{ item.getId }}">{{ item.getNom }},  Email :  {{ item.getEmail }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-default">Ajouter au carnet</button>
+                </form>
+
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Détail Contact -->
+{% for item in contacts %}
+<div class="modal fade" id="{{ "modal#{item.getId}" }}" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel3" aria-hidden="true" style="color: #313131;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel3">
+                    Détail de {{ item.getNom }}
+                </h4>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="modalName">Nom</label>
+                    <p>{{ item.getNom }}</p>
+                </div>
+                <div class="form-group">
+                    <label for="modalEmail">Email</label>
+                    <p>{{ item.getEmail }}</p>
+                </div>
+                <div class="form-group">
+                    <label for="modalAdresse">Adresse</label>
+                    <p>{{ item.getAdresse }}</p>
+                </div>
+                <div class="form-group">
+                    <label for="modalSite">Site</label>
+                    <p>{{ item.getSite }}</p>
+                </div>
+                <div class="form-group">
+                    <label for="modalPhone">Phone</label>
+                    <p>{{ item.getPhone }}</p>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+<!-- Modal Edition Contact -->
+{% for item in contacts %}
+    <div class="modal fade" id="{{ "modalEdit#{item.getId}" }}" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel4" aria-hidden="true" style="color: #313131;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel4">
+                        Edition du contact {{ item.getNom }}
+                    </h4>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+
+                    <form action="{{ path('edit_contact') }}" method="post">
+                        <div class="form-group">
+                            <label for="modalName">Nom</label>
+                            <input type="text" class="form-control" value="{{ item.getNom }}"
+                                   id="modalName" placeholder="Nom" name="modalName"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="modalEmail">Email</label>
+                            <input type="email" class="form-control" value="{{ item.getEmail }}"
+                                   id="modalEmail" placeholder="Email" name="modalEmail"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="modalAdresse">Adresse</label>
+                            <input type="text" class="form-control" value="{{ item.getAdresse }}"
+                                   id="modalAdresse" placeholder="Adresse" name="modalAdresse"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="modalSite">Site</label>
+                            <input type="text" class="form-control" value="{{ item.getSite }}"
+                                   id="modalSite" placeholder="Site" name="modalSite"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="modalPhone">Phone</label>
+                            <input type="text" class="form-control" value="{{ item.getPhone }}"
+                                   id="modalPhone" placeholder="Phone" name="modalPhone"/>
+                        </div>
+                        <input type="hidden" name="idContact" value="{{ item.getId() }}">
+                        <button type="submit" class="btn btn-success">Sauvegarder les modifications</button>
+                    </form>
+
+
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</body>
+</html>
